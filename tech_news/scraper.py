@@ -36,7 +36,14 @@ def scrape_updates(html_content):
 
 # Requisito 3
 def scrape_next_page_link(html_content):
-    """Seu código deve vir aqui"""
+    try:
+        selector = Selector(text=html_content)
+        next_page = selector.css('.next::attr(href)').get()
+        # Lembrar que a palavra após a classe não conta.
+        # Exemplo: .next page-numbers. A classe do link é apenas o .next
+        return next_page
+    except LookupError:
+        return None
 
 
 # Requisito 4
