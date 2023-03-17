@@ -13,7 +13,7 @@ def fetch(url):
             return response.text # Conteúdo HTML é retornado por .text não .content
         else:
             return None
-    except requests.exceptions.Timeout:
+    except:
         return None
 
 
