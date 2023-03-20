@@ -1,4 +1,5 @@
 from tech_news.database import search_news
+from datetime import datetime
 
 
 # Requisito 7
@@ -21,7 +22,26 @@ def search_by_title(title):
 
 # Requisito 8
 def search_by_date(date):
-    """Seu código deve vir aqui"""
+    try:
+        # Formato como a data chega:
+        iso_data = "%Y-%m-%d"
+
+        # https://stackoverflow.com/questions/9978534/match-dates-using-python-regular-expressions
+        # Formata a data para dd/mm/yyyy
+        data_DMY = datetime.strptime(date, iso_data).strftime("%d/%m/%Y")
+        # Busca usando a data no formato "correto"
+        busca = {
+                    "timestamp": data_DMY
+                }
+        # Traz a noticia encontrada
+        return [
+            (
+                noticia_encontrada["title"], noticia_encontrada["url"]
+            )
+            for noticia_encontrada in search_news(busca)]
+    # Caso a data inserida seja inválida, cai nesse erro e retorna a mensagem
+    except ValueError:
+        raise ValueError("Data inválida")
 
 
 # Requisito 9
