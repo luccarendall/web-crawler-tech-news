@@ -1,6 +1,7 @@
 import requests
 import time
 from parsel import Selector
+import re
 
 
 # Requisito 1
@@ -48,7 +49,40 @@ def scrape_next_page_link(html_content):
 
 # Requisito 4
 def scrape_news(html_content):
-    """Seu código deve vir aqui"""
+    # Remover caracteres vazios ao final
+    # https://stackoverflow.com/questions/18457101/python-re-compile-and-re-sub
+    # https://stackoverflow.com/questions/3075130/what-is-the-difference-between-and-regular-expressions
+    removerEspacos = re.compile("<.*?>")
+
+    try:
+        # Pegar o conteúdo html
+        selector = Selector(text=html_content)
+        # Buscar cada informação
+        url_noticia = selector.css('div::attr(data-share-url)').get()
+        title_noticia = selector.css('.entry-title::text').get()
+        timestamp_noticia = selector.css('.meta-date::text').get()
+        pessoa_redatora = selector.css('.author a::text').get()
+        tempo_de_leitura = selector.css('.meta-reading-time::text').get()
+        resumo = re.sub(
+            removerEspacos, '', selector.css(".entry-content p").get()
+            )
+        categoria = selector.css('.category-style .label::text').get()
+        # Preencher um dicionário com as informações coletadas
+        noticia_blog = {
+            'url': url_noticia,
+            # https://stackoverflow.com/questions/10993612/how-to-remove-xa0-from-string-in-python
+            'title': title_noticia.replace(u'\xa0', u''),
+            'timestamp': timestamp_noticia,
+            'writer': pessoa_redatora,
+            'reading_time': int(tempo_de_leitura.split(' ')[0]),
+            # remove todos os espaços em branco no final da string ↓
+            'summary': resumo.rstrip(),
+            'category': categoria
+        }
+        # Retornar o uma noticia
+        return noticia_blog
+    except LookupError:
+        return "Erro na raspagem da noticia"
 
 
 # Requisito 5
