@@ -46,4 +46,19 @@ def search_by_date(date):
 
 # Requisito 9
 def search_by_category(category):
-    """Seu código deve vir aqui"""
+    # praticamente igual a busca por titulo, só alterando o termo de busca
+    # busca_por_categoria. Flake pediu para diminuir o tamanho da linha
+    busca_categ = search_news(
+        {
+            'category': {
+                        '$regex': category,
+                        '$options': 'i',
+                     }
+        }
+    )
+
+    return [
+        (
+            noticia_encontrada['title'],
+            noticia_encontrada['url']) for noticia_encontrada in busca_categ
+    ]
